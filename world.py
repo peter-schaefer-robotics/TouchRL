@@ -52,17 +52,18 @@ class World:
         else: 
             raise IndexError("Maximum touches used. Please reset world.")
     
-    def _move(self, directions):
-        # directions is an array for all games with each a tuple of back, stay or forward for both axis. 
-        # stay would be (1,1)
-        # left and up is (0,0) and right and down is (2,2)
-        # only left is (0,1) and only down is (1,2)
+    def _move(self, moves):
+        # Move numbers 0..8 chosen by the agent and their direction:
+        #   0 left-up    1 up     2 right-up
+        #   3 left       4 stay   5 right
+        #   6 left-down  7 down   8 right-down
+        # moves: one number 0..8 per game, see the table above
         for i in range(self.num_games):
             y, x = self.positions[i]
-            dx, dy = directions[i]
+            dx, dy = moves[i] % 3, moves[i] // 3    # column and row of the 3x3 move table
             x = x + (dx - 1) * self.step_size
             y = y + (dy - 1) * self.step_size
-            self.positions[i] = (np.clip(y, 0, self.grid_size - 1), np.clip(x, 0, self.grid_size - 1))    
+            self.positions[i] = (np.clip(y, 0, self.grid_size - 1), np.clip(x, 0, self.grid_size - 1))      # clip limits the agent to stay within the world
 
     def _make_boards(self):
         # initialize all arrays with zeros
@@ -84,5 +85,5 @@ class World:
         patches = np.zeros((self.num_games,k,k), dtype=np.float32)
         for i in range(self.num_games):
             y, x = self.positions[i]
-            patches[i] = self.padded[i,y : y + k, x : x + k] # moved due to padding of pathsize // 2
+            patches[i] = self.padded[i,y : y + k, x : x + k] # padding shifts every cell by patch_size // 2, so this slice is centered on the finger
         return patches

@@ -24,7 +24,7 @@ def draw_rectangle(grid_size):
     return mask
 
 def draw_triangle_isosceles(grid_size):
-    # draw a isosceles triangle at the base position bx, by, with base length lb within the given grid size as a mask of zeros and ones
+    # draw a isosceles triangle at bx, by = middle cell of the base (bottom row), tip points up, with base length lb within the given grid size as a mask of zeros and ones
     # base length lb must be odd to simplify it in this discrete space. height is per definition half lb rounded to ceiling
     # the triangle has to be fully inside the grid (can be changed later to make it harder)
     lb = random.randrange(3, grid_size + 1, 2)      # only odd values: 3, 5, 7, ...

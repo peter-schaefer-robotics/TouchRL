@@ -7,40 +7,24 @@ import matplotlib
 import numpy as np
 import torch
 from world import World
+from agent import Agent
+from train import train
 
 
 def main():
     # ---------------------------------------------------------------------------
-    # 1. World: random shape on a 16x16 grid, touch patch of patch_size, finger moves with step_size. 
+    # In a world, a random shape is on a 16x16 grid, touch from a finder with 
+    # patch of patch_size, and the finger moves with step_size. 
     # Patch sizes must be odd. 
+    # The agent is a small network with memory, it outputs a shape guess and a move.
+    # Training: guess learned supervised (cross-entropy), moves with REINFORCE.
     # ---------------------------------------------------------------------------
-    #
-    num_games = 16
-    w = World(num_games)
-    w.reset()
-    print(w)
-    directions = np.random.randint(0,3, size=(num_games, 2))
-    w.step(directions)
-    print(w)
+    num_games = 512
+    world = World(num_games)
+    print(world)
+    agent = Agent()
+    train(agent, world)
 
-
-    # ---------------------------------------------------------------------------
-    # 2. Agent: small network with memory, outputs a shape guess and a move
-    # ---------------------------------------------------------------------------
-    # TODO
-
-
-    # ---------------------------------------------------------------------------
-    # 3. Training: play games, learn the guess from the label and the moves
-    #    with REINFORCE
-    # ---------------------------------------------------------------------------
-    # TODO
-
-
-    # ---------------------------------------------------------------------------
-    # 4. Results: compare with random moves, plot accuracy per touch, save a GIF
-    # ---------------------------------------------------------------------------
-    # TODO
 
 
 def check_setup() -> None:
