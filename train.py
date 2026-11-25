@@ -18,8 +18,9 @@ def train(agent, world, num_rounds=1500, gamma=0.95, entropy_coef=0.01, lr=1e-3)
     """Training the agent: guess -> supervised, moves -> REINFORCE
 
     In:  agent, world, training settings
-    Out: nothing; changes the agent's weights, prints progress
+    Out: history, list of (round, accuracy after the last touch, touches until the guess stays right)
     """
+    history = []
     optimizer = torch.optim.Adam(agent.parameters(), lr=lr)                     # Adam optimizer updates all agent weights, step size lr
     
     for round_num in range(num_rounds):
@@ -67,7 +68,16 @@ def train(agent, world, num_rounds=1500, gamma=0.95, entropy_coef=0.01, lr=1e-3)
         loss.backward() 
         optimizer.step()
 
-        # track progress
+        # track progress, every round (cheap, no learning)
+        with torch.no_grad():
+            correct = (guesses.argmax(dim=2) == labels).int()     # (16, B): 1 if the guess after this touch is right
+            stays = correct.flip(0).cumprod(0).flip(0)              # 1 if the guess is right from this touch until the end
+            right_until_end = stays.sum(0)                          # per game: number of last touches with a right guess
+            solved = right_until_end > 0                            # games whose final guess is right
+            touches = (T - right_until_end[solved] + 1).float().mean() if solved.any() else torch.tensor(float("nan"))
+            acc = correct[-1].float().mean()                        # share of correct guesses after the last touch
+        history.append((round_num, acc.item(), touches.item()))    # touches = first touch from which the guess stays right
         if round_num % 100 == 0:
-            acc = (guesses[-1].argmax(dim=1) == labels).float().mean()  # share of correct guesses after the last touch
-            print(f"round {round_num}  loss {loss.item():.3f}  accuracy after 16 touches {acc:.2f}")
+            print(f"round {round_num}  loss {loss.item():.3f}  accuracy after 16 touches {acc:.2f}  right from touch {touches:.1f}")
+
+    return history

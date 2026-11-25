@@ -9,6 +9,7 @@ import torch
 from world import World
 from agent import Agent
 from train import train
+from visualize import plot_training, plot_touches_to_correct, plot_accuracy, show_game, show 
 
 
 def main():
@@ -23,8 +24,13 @@ def main():
     world = World(num_games)
     print(world)
     agent = Agent()
-    train(agent, world)
-
+    history = train(agent, world, num_rounds=500, gamma=0.95, entropy_coef=0.01, lr=1e-3)
+    torch.save(agent.state_dict(), "agent.pt")   # keep the trained agent
+    plot_training(history)
+    plot_touches_to_correct(history)
+    plot_accuracy(agent)
+    show_game(agent)
+    show()
 
 
 def check_setup() -> None:
