@@ -3,7 +3,7 @@ from shapes import SHAPES
 import random
 
 class World:
-    def __init__(self, num_games, grid_size=16, patch_size=3, step_size=2, max_touch_num=16):
+    def __init__(self, num_games, grid_size=16, patch_size=3, step_size=2, max_touch_num=16, noise=0.0):
         self.num_games = num_games
         self.grid_size = grid_size
         self.patch_size = patch_size
@@ -14,6 +14,7 @@ class World:
         self.padded = None # padded boards to handle edge cases
         self.max_touch_num = max_touch_num
         self.touch_num = 0
+        self.noise = noise # chance that a felt cell is reported wrong (0 = perfect sensor)
 
     def __str__(self):
         # Return description of world in text
@@ -86,4 +87,9 @@ class World:
         for i in range(self.num_games):
             y, x = self.positions[i]
             patches[i] = self.padded[i,y : y + k, x : x + k] # padding shifts every cell by patch_size // 2, so this slice is centered on the finger
+        if self.noise > 0:
+            # sensor noise: each cell reading flips 0 <-> 1 with chance noise, drawn fresh at every touch,
+            # so touching the same spot again can correct a wrong reading
+            flips = np.random.random(patches.shape) < self.noise
+            patches = np.where(flips, 1 - patches, patches).astype(np.float32)
         return patches

@@ -1,0 +1,63 @@
+# Sensitivity study for TouchRL
+#
+# Each group varies a few parameters that belong together. Inside a group, every combination of the
+# listed values is trained; all other parameters stay at the baseline. Every group contains the
+# baseline value, so each group can be read on its own.
+# In the plots, the first parameter of a group is the x-axis, the second one gets one line per value.
+#
+#   python study.py                      run all groups
+#   python study.py fingertip memory     run only these groups
+
+[study]
+seeds = [0, 1, 2]       # each setting is trained once per seed; differences smaller than the spread between seeds are noise
+workers = 4             # runs in parallel (separate processes, 1 thread each); 1 = one after another
+eval_games = 2048       # fresh games for the final evaluation of each trained agent
+
+[baseline]              # the current single-run setup
+grid_size = 16
+patch_size = 3          # must be odd
+step_size = 2
+max_touch_num = 16
+noise = 0.0             # chance that a felt cell is reported wrong; 0 = perfect sensor
+num_games = 512
+num_rounds = 1500
+lr = 0.001
+gamma = 0.95
+entropy_coef = 0.01
+reward = "level"        # "level" = A: how sure after the move, "gain" = B: how much more sure through the move
+memory = "gru"          # "gru", "rnn" (memory without gates) or "none" (no memory, only the current touch)
+hidden_size = 128
+
+[groups.fingertip]
+description = "Sensor geometry: size of the fingertip vs. distance per move"
+patch_size = [1, 3, 5]          # point probe, current fingertip, large pad
+step_size = [1, 2, 3]           # smaller than the patch: overlapping touches; larger: gaps between touches
+
+[groups.search]
+description = "Search difficulty: area to search vs. touches available"
+grid_size = [12, 16, 24]
+max_touch_num = [8, 16, 24]
+
+[groups.reward]
+description = "Credit assignment: how far credit reaches (gamma) for reward A vs. B"
+gamma = [0.0, 0.5, 0.95, 0.99]  # 0 = only the move's own reward, close to 1 = all later rewards count
+reward = ["level", "gain"]
+
+[groups.exploration]
+description = "Exploration: how strongly the agent is kept from settling on one move too early"
+entropy_coef = [0.0, 0.003, 0.01, 0.03, 0.1]
+
+[groups.optimization]
+description = "Optimization: size of the weight updates vs. games per update"
+lr = [0.0003, 0.001, 0.003]
+num_games = [128, 512, 1024]    # more games per round: less noisy updates, but slower rounds
+
+[groups.memory]
+description = "Memory: is memory needed at all (partial observability), and how much capacity"
+hidden_size = [32, 128, 256]
+memory = ["none", "rnn", "gru"]
+
+[groups.robustness]
+description = "Sensor noise: can more touches make up for an unreliable fingertip?"
+noise = [0.0, 0.05, 0.1, 0.2]   # share of wrong cell readings, drawn fresh at every touch
+max_touch_num = [8, 16, 24]

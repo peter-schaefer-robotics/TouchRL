@@ -88,9 +88,11 @@ def plot_training(history, name="training_curve.png"):
 
 
 def plot_touches_to_correct(history, name="touches_to_correct.png"):
-    """Per training round: from which touch on the guess was right and stayed right (games solved in the end)."""
+    """Per training round: from which touch on the guess is right and at least 90 % sure for good.
+    Average over all games; a game that never gets there counts as 17."""
     rounds = np.array([h[0] for h in history]); touches = np.array([h[2] for h in history])
-    _plot_history(rounds, touches, "#D85A30", "touch from which the guess stays right", name, (1, 16))
+    _plot_history(rounds, touches, "#D85A30", "touch from which right and sure", name, (1, 17),
+                  ref=17, ref_label="never (17)")
 
 
 def plot_accuracy(agent, name="accuracy_per_touch.png"):
