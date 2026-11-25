@@ -1,6 +1,6 @@
 # TouchRL: A Minimal Testbed for Active Tactile Perception
 
-A tactile fingertip learns to find and name a hidden shape without any visual information about the world. Reinforcement learning from scratch in PyTorch, trained on a laptop CPU.
+A tactile fingertip learns to find and name a hidden shape without any visual information about the world. It learns where to touch by reinforcement learning and which shape it feels by supervised learning. Written in PyTorch, trained on a laptop CPU.
 
 ![The agent "best" searches the board, reaches the circle at touch 3 and is sure at touch 4](docs/figures/best_game.gif)
 

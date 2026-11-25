@@ -1,7 +1,7 @@
 [project]
 name = "touchrl"
 version = "0.1.0"
-description = "A tactile fingertip learns to find and name a hidden shape with reinforcement learning"
+description = "A minimal testbed for active tactile perception: a fingertip learns where to touch by reinforcement learning and which shape it feels by supervised learning"
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Peter Schaefer" }]
