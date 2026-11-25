@@ -33,10 +33,10 @@ class World:
                     else:
                         line += "1" if v else "0"
                 rows.append(line)
-        return "\n".join(rows) + "\n" + f"World with {self.num_games} games on a {self.grid_size}x{self.grid_size} grid with {self.patch_size}x{self.patch_size} patches and step size {self.step_size}. Current amount of boards: {n}"
+        return "\n".join(rows) + "\n" + f"World with {self.num_games} games on a {self.grid_size}x{self.grid_size} grid with {self.patch_size}x{self.patch_size} patches and step size {self.step_size}. Current number of boards: {n}"
 
     def reset(self):
-        # Build num_games new boards with random shapes, each with a corresponding lable of the shape and a random starting position of the tactile finger
+        # Build num_games new boards with random shapes, each with a corresponding label of the shape and a random starting position of the tactile finger
         self.boards, self.labels, self.positions = self._make_boards()
         # Pad the boards to handle edge cases
         p = self.patch_size // 2
@@ -65,6 +65,15 @@ class World:
             x = x + (dx - 1) * self.step_size
             y = y + (dy - 1) * self.step_size
             self.positions[i] = (np.clip(y, 0, self.grid_size - 1), np.clip(x, 0, self.grid_size - 1))      # clip limits the agent to stay within the world
+
+    def touches_shape(self):
+        # Per game: does the patch under the finger cover at least one cell of the shape right now?
+        # Uses the true board without sensor noise. Only for measuring the search, the agent never sees it.
+        k = self.patch_size
+        rows = self.positions[:, 0, None, None] + np.arange(k)[None, :, None]   # padded rows y .. y + k - 1
+        cols = self.positions[:, 1, None, None] + np.arange(k)[None, None, :]   # padded columns x .. x + k - 1
+        games = np.arange(self.num_games)[:, None, None]
+        return self.padded[games, rows, cols].any(axis=(1, 2))
 
     def _make_boards(self):
         # initialize all arrays with zeros

@@ -1,0 +1,23 @@
+{
+  "name": "big-board",
+  "order": 9,
+  "description": "The same fingertip on a 32x32 board: 16 touches cover at most 14 % of it",
+  "accuracy": 0.88818359375,
+  "touches_to_sure": 9.0244140625,
+  "seed": 100,
+  "params": {
+    "grid_size": 32,
+    "patch_size": 3,
+    "step_size": 2,
+    "max_touch_num": 16,
+    "noise": 0.0,
+    "num_games": 512,
+    "num_rounds": 1500,
+    "lr": 0.001,
+    "gamma": 0.95,
+    "entropy_coef": 0.01,
+    "reward": "level",
+    "memory": "gru",
+    "hidden_size": 128
+  }
+}

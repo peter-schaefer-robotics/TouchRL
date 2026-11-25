@@ -7,3 +7,12 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Study raw data: one result file and one trained agent (0.1 to 1.6 MB) per run, hundreds of them.
+# The tables and figures in results/ stay in git; the named agents for play.py live in agents/.
+results/runs/
+results/agents/
+
+# Your own agent from main.py, and the figures of main.py and play.py
+/agent.pt
+play_output/

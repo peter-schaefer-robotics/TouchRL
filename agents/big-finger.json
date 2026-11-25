@@ -1,0 +1,23 @@
+{
+  "name": "big-finger",
+  "order": 8,
+  "description": "A 5x5 fingertip that moves 3 cells per step",
+  "accuracy": 0.97802734375,
+  "touches_to_sure": 3.76611328125,
+  "seed": 100,
+  "params": {
+    "grid_size": 16,
+    "patch_size": 5,
+    "step_size": 3,
+    "max_touch_num": 16,
+    "noise": 0.0,
+    "num_games": 512,
+    "num_rounds": 1500,
+    "lr": 0.001,
+    "gamma": 0.95,
+    "entropy_coef": 0.01,
+    "reward": "level",
+    "memory": "gru",
+    "hidden_size": 128
+  }
+}

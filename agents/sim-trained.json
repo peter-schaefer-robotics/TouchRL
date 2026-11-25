@@ -1,0 +1,24 @@
+{
+  "name": "sim-trained",
+  "order": 6,
+  "description": "Trained with a perfect sensor (simulation), plays with 10 % noise (real world): the sim2real gap",
+  "accuracy": 0.4599609375,
+  "touches_to_sure": 11.93408203125,
+  "seed": 100,
+  "params": {
+    "grid_size": 16,
+    "patch_size": 3,
+    "step_size": 2,
+    "max_touch_num": 16,
+    "noise": 0.1,
+    "num_games": 512,
+    "num_rounds": 1500,
+    "lr": 0.001,
+    "gamma": 0.95,
+    "entropy_coef": 0.01,
+    "reward": "level",
+    "memory": "gru",
+    "hidden_size": 128,
+    "train_noise": 0.0
+  }
+}

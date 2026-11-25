@@ -1,0 +1,23 @@
+{
+  "name": "point-probe",
+  "order": 7,
+  "description": "A 1x1 fingertip: one cell per touch, so the shape has to be pieced together from memory",
+  "accuracy": 0.693359375,
+  "touches_to_sure": 15.12841796875,
+  "seed": 100,
+  "params": {
+    "grid_size": 16,
+    "patch_size": 1,
+    "step_size": 2,
+    "max_touch_num": 16,
+    "noise": 0.0,
+    "num_games": 512,
+    "num_rounds": 1500,
+    "lr": 0.001,
+    "gamma": 0.95,
+    "entropy_coef": 0.01,
+    "reward": "level",
+    "memory": "gru",
+    "hidden_size": 128
+  }
+}

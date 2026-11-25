@@ -1,0 +1,18 @@
+[project]
+name = "touchrl"
+version = "0.1.0"
+description = "A tactile fingertip learns to find and name a hidden shape with reinforcement learning"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Peter Schaefer" }]
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.0",
+    "numpy>=1.24",
+    "matplotlib>=3.7",
+    "pillow>=9.1",
+]
+
+[tool.uv]
+package = false                                  # a set of scripts to run, not a package to install
+constraint-dependencies = ["fonttools!=4.69.0"]  # used by matplotlib; 4.69.0 has no files for Python 3.12 or newer

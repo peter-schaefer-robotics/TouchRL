@@ -1,0 +1,23 @@
+{
+  "name": "untrained",
+  "order": 2,
+  "description": "Random weights, no training: where every agent starts",
+  "accuracy": 0.31005859375,
+  "touches_to_sure": 17.0,
+  "seed": 100,
+  "params": {
+    "grid_size": 16,
+    "patch_size": 3,
+    "step_size": 2,
+    "max_touch_num": 16,
+    "noise": 0.0,
+    "num_games": 512,
+    "num_rounds": 0,
+    "lr": 0.001,
+    "gamma": 0.95,
+    "entropy_coef": 0.01,
+    "reward": "level",
+    "memory": "gru",
+    "hidden_size": 128
+  }
+}

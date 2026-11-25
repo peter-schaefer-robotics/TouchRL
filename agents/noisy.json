@@ -1,0 +1,23 @@
+{
+  "name": "noisy",
+  "order": 5,
+  "description": "Noisy fingertip: 10 % of the cell readings are wrong, in training and in play",
+  "accuracy": 0.86083984375,
+  "touches_to_sure": 11.82470703125,
+  "seed": 100,
+  "params": {
+    "grid_size": 16,
+    "patch_size": 3,
+    "step_size": 2,
+    "max_touch_num": 16,
+    "noise": 0.1,
+    "num_games": 512,
+    "num_rounds": 1500,
+    "lr": 0.001,
+    "gamma": 0.95,
+    "entropy_coef": 0.01,
+    "reward": "level",
+    "memory": "gru",
+    "hidden_size": 128
+  }
+}

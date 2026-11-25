@@ -1,0 +1,23 @@
+{
+  "name": "baseline",
+  "order": 0,
+  "description": "The standard setup: 3x3 fingertip, 16x16 board, GRU memory with 128 units, 16 touches",
+  "accuracy": 0.94140625,
+  "touches_to_sure": 6.0625,
+  "seed": 100,
+  "params": {
+    "grid_size": 16,
+    "patch_size": 3,
+    "step_size": 2,
+    "max_touch_num": 16,
+    "noise": 0.0,
+    "num_games": 512,
+    "num_rounds": 1500,
+    "lr": 0.001,
+    "gamma": 0.95,
+    "entropy_coef": 0.01,
+    "reward": "level",
+    "memory": "gru",
+    "hidden_size": 128
+  }
+}

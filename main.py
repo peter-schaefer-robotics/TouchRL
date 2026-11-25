@@ -1,6 +1,6 @@
-"""TouchRL: a blind fingertip learns to find and name a hidden shape by touch.
+"""TouchRL: a tactile fingertip learns to find and name a hidden shape by touch alone.
 
-Run with:  python main.py
+Run with:  uv run main.py
 """
 import platform
 import matplotlib
@@ -14,7 +14,7 @@ from visualize import plot_training, plot_touches_to_correct, plot_accuracy, sho
 
 def main():
     # ---------------------------------------------------------------------------
-    # In a world, a random shape is on a 16x16 grid, touch from a finder with 
+    # In a world, a random shape is on a 16x16 grid, felt by a finger with a
     # patch of patch_size, and the finger moves with step_size. 
     # Patch sizes must be odd. 
     # The agent is a small network with memory, it outputs a shape guess and a move.
@@ -35,7 +35,7 @@ def main():
 
 def check_setup() -> None:
     """Print the python and package versions to confirm that the setup works."""
-    print(f"Python    {platform.python_version()}")
+    print(f"Python     {platform.python_version()}")
     print(f"PyTorch    {torch.__version__}")
     print(f"NumPy      {np.__version__}")
     print(f"Matplotlib {matplotlib.__version__}")

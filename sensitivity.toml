@@ -1,17 +1,24 @@
 # Sensitivity study for TouchRL
 #
-# Each group varies a few parameters that belong together. Inside a group, every combination of the
-# listed values is trained; all other parameters stay at the baseline. Every group contains the
-# baseline value, so each group can be read on its own.
-# In the plots, the first parameter of a group is the x-axis, the second one gets one line per value.
+# Each group varies a few parameters that belong together; all other parameters stay at the baseline.
+# Inside a group:
+#   a list of values           that parameter is varied, every combination is trained
+#   a single value             that parameter is fixed to this value, for this group only
+#   seeds = [...]              other seeds for this group than in [study]
+#   [groups.<name>.variants]   named bundles of values, one line each in the plot (a variant may have a description)
+# At most two things vary per group: the first is the x-axis of the plot, the second gets one line per value.
+# Optional, not in the baseline: train_noise = sensor noise during training, if it should differ from
+# noise (the noise in the test world). Used by the group "sim2real".
+# The group "zoo" defines the named agents that play.py can show.
 #
-#   python study.py                      run all groups
-#   python study.py fingertip memory     run only these groups
+#   uv run study.py                      run all groups
+#   uv run study.py fingertip memory     run only these groups
 
 [study]
 seeds = [0, 1, 2]       # each setting is trained once per seed; differences smaller than the spread between seeds are noise
 workers = 4             # runs in parallel (separate processes, 1 thread each); 1 = one after another
 eval_games = 2048       # fresh games for the final evaluation of each trained agent
+save_agents = true      # keep every trained agent in results/agents/ (0.1 to 1.6 MB each), e.g. for GIFs
 
 [baseline]              # the current single-run setup
 grid_size = 16
@@ -44,12 +51,13 @@ gamma = [0.0, 0.5, 0.95, 0.99]  # 0 = only the move's own reward, close to 1 = a
 reward = ["level", "gain"]
 
 [groups.exploration]
-description = "Exploration: how strongly the agent is kept from settling on one move too early"
-entropy_coef = [0.0, 0.003, 0.01, 0.03, 0.1]
+description = "Exploration: does a bigger exploration bonus help the finger find the shape?"
+seeds = [3, 4, 5]               # new seeds: these runs also measure how often the shape was found at all
+entropy_coef = [0.0, 0.01, 0.1, 0.3, 0.5, 1.0]
 
 [groups.optimization]
 description = "Optimization: size of the weight updates vs. games per update"
-lr = [0.0003, 0.001, 0.003]
+lr = [0.0003, 0.001, 0.003, 0.005, 0.01, 0.03]
 num_games = [128, 512, 1024]    # more games per round: less noisy updates, but slower rounds
 
 [groups.memory]
@@ -61,3 +69,77 @@ memory = ["none", "rnn", "gru"]
 description = "Sensor noise: can more touches make up for an unreliable fingertip?"
 noise = [0.0, 0.05, 0.1, 0.2]   # share of wrong cell readings, drawn fresh at every touch
 max_touch_num = [8, 16, 24]
+
+[groups.gru_vs_rnn]
+description = "GRU vs. RNN in detail: 10 seeds, and a point probe that has to collect the shape touch by touch"
+seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+patch_size = [1, 3]                 # 1: one touch shows a single cell, so memory has to do the work
+memory = ["none", "rnn", "gru"]     # none = reference: how much of the result needs memory at all
+
+[groups.best]
+description = "Tuned setup vs. baseline under harder conditions: 10 % sensor noise, bigger boards"
+seeds = [0, 1, 2, 3, 4]
+noise = 0.1                     # single value: fixed for this group, for both variants
+grid_size = [16, 24, 32]        # patch_size stays 3 (baseline)
+
+[groups.best.variants]          # one line each in the plot
+baseline = {}
+tuned = { memory = "gru", hidden_size = 256, lr = 0.003, reward = "gain", gamma = 0.5, entropy_coef = 0.003 }
+
+[groups.sim2real]
+description = "Sim2real gap: trained on a perfect sensor (simulation), tested on a noisy one (real world)"
+noise = [0.0, 0.05, 0.1, 0.2]                       # sensor noise in the test world, the "reality"
+
+[groups.sim2real.variants]
+"trained with the test noise" = {}                  # best case: the simulation matches reality exactly
+"trained without noise" = { train_noise = 0.0 }     # perfect simulation, noisy reality: the sim2real gap
+"trained with 10 % noise" = { train_noise = 0.1 }   # noise added on purpose in training: robust everywhere?
+
+[groups.zoo]
+description = "Named agents for play.py: one trained agent each"
+seeds = [100]                   # a seed of their own, so every named agent is trained fresh and saved
+
+[groups.zoo.variants.baseline]
+description = "The standard setup: 3x3 fingertip, 16x16 board, GRU memory with 128 units, 16 touches"
+
+[groups.zoo.variants.best]
+description = "Tuned training: 256 memory units, learning rate 0.003, reward B (information gain) with gamma 0.5"
+hidden_size = 256
+lr = 0.003
+reward = "gain"
+gamma = 0.5
+entropy_coef = 0.003
+
+[groups.zoo.variants.untrained]
+description = "Random weights, no training: where every agent starts"
+num_rounds = 0
+
+[groups.zoo.variants.memoryless]
+description = "No memory, only the current touch: learns to find an edge and park on it"
+memory = "none"
+
+[groups.zoo.variants.explorer]
+description = "Exploration bonus 0.5: rolls the dice for almost every move, so it finds the shape less often"
+entropy_coef = 0.5
+
+[groups.zoo.variants.noisy]
+description = "Noisy fingertip: 10 % of the cell readings are wrong, in training and in play"
+noise = 0.1
+
+[groups.zoo.variants.sim-trained]
+description = "Trained with a perfect sensor (simulation), plays with 10 % noise (real world): the sim2real gap"
+noise = 0.1
+train_noise = 0.0
+
+[groups.zoo.variants.point-probe]
+description = "A 1x1 fingertip: one cell per touch, so the shape has to be pieced together from memory"
+patch_size = 1
+
+[groups.zoo.variants.big-finger]
+description = "A 5x5 fingertip that moves 3 cells per step"
+patch_size = 5
+step_size = 3
+
+[groups.zoo.variants.big-board]
+description = "The same fingertip on a 32x32 board: 16 touches cover at most 14 % of it"
+grid_size = 32
