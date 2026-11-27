@@ -19,8 +19,9 @@ Needs [uv](https://docs.astral.sh/uv/). The first `uv run` sets everything up: t
 ```bash
 uv run play.py best                  # a trained agent plays a new random world
 uv run main.py                       # train your own agent (about a minute)
-uv run study.py                      # repeat the whole study (several hours)
+uv run study.py                      # repeat the whole study (about 4 hours on a laptop)
 uv run study.py fingertip sim2real   # only some groups of the study
+uv run plot_findings.py              # one figure per finding, from the study results
 ```
 
 Study groups: `fingertip`, `search`, `reward`, `exploration`, `optimization`, `memory`, `robustness`, `gru_vs_rnn`, `best`, `sim2real`, `zoo` (settings in `sensitivity.toml`).
@@ -46,14 +47,15 @@ Study groups: `fingertip`, `search`, `reward`, `exploration`, `optimization`, `m
 
 ## Findings
 
-- **The sensor matters more than the learner.** How much one touch covers and how clean the reading is move accuracy by 25 to 30 points. Reward and exploration settings in a sensible range move it by 1 to 2.
-- **Sim2real gap.** Trained with a perfect sensor, the agent's accuracy drops from 95 % to 45 % when 10 % of the readings are wrong. Adding that noise during training brings it back to 86 %.
-- **More exploration, less search.** A bigger exploration bonus makes the moves more random. The finger actually finds the shape less often (93 % → 69 %).
-- **Without memory, still close to 90 % accuracy.** The agent learns to find an edge and park on it.
+From one full run of the study: 292 training runs, 3 to 10 seeds per setting.
 
-The sim2real and exploration numbers come from one trained agent per setting so far; the study repeats them with three seeds.
+- **Within a stable training regime, the sensor dominates.** Fingertip size and sensor noise move the accuracy by 24 to 29 percentage points, the learning settings in their stable range by 1 to 4.
+- **Without noise, errors come from the search; with noise, from the reading.** Without noise, 86 % of the errors happen because the fingertip never touches the shape.
+- **Sim-to-real gap.** Trained on a perfect sensor, the agent's accuracy drops from 94 % to 44 % when 10 % of the readings are wrong. Training with that noise brings it back to 86 %.
+- **More exploration, less detection.** A larger entropy bonus makes the moves more random, so the fingertip finds the shape less often (92 % → 70 %).
+- **Memory matters most where one touch reveals little.** It adds 5 percentage points with the 3x3 fingertip and 23 with a 1x1 fingertip. Without memory, the 3x3 agent still reaches 90 % by finding an edge and staying on it.
 
-Details, figures and GIFs: [docs/findings.md](docs/findings.md)
+One figure per finding, with statistics, in `results/findings/`. Details and GIFs: [docs/findings.md](docs/findings.md)
 
 ## Files
 
@@ -65,6 +67,7 @@ Details, figures and GIFs: [docs/findings.md](docs/findings.md)
 | `main.py` | Trains one agent and shows its results |
 | `play.py`, `agents/` | The named trained agents and the game viewer |
 | `study.py`, `sensitivity.toml`, `results/` | The sensitivity study: settings, tables and figures |
+| `plot_findings.py`, `results/findings/` | Figures for the study findings, one per finding, each with a caption |
 | `visualize.py` | Plots and animations |
 | `docs/findings.md` | The findings in detail, with figures and GIFs |
 | `pyproject.toml`, `uv.lock` | Dependencies for uv |
